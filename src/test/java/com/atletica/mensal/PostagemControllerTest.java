@@ -1,12 +1,9 @@
 package com.atletica.mensal;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-
+import com.atletica.mensal.Controller.PostagemController;
+import com.atletica.mensal.Entities.PostagemEntity;
+import com.atletica.mensal.Entities.UserEntity;
+import com.atletica.mensal.Service.PostagemService;
+import com.atletica.mensal.Service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,12 +12,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
-import com.atletica.mensal.Controller.PostagemController;
-import com.atletica.mensal.Entities.PostagemEntity;
-import com.atletica.mensal.Service.PostagemService;
+import java.util.List;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -28,6 +26,9 @@ public class PostagemControllerTest {
 
     @Mock
     private PostagemService postagemService;
+
+    @Mock
+    private UserService userService;  // Adicione o mock para o UserService
 
     @InjectMocks
     private PostagemController postagemController;
@@ -42,20 +43,32 @@ public class PostagemControllerTest {
 
     @Test
     void testCriarPostagem() throws Exception {
+        // Criar um usuário de teste
+        UserEntity user = new UserEntity();
+        user.setNome("Atletica Ursao");
+        user.setEmail("atletica@gmail.com");
+
+        // Simular o comportamento do UserService
+        when(userService.findByEmail("atletica@gmail.com")).thenReturn(user);
+
+        // Criar uma postagem de teste
         PostagemEntity post = new PostagemEntity();
         post.setImagem("Nova Festa");
+        post.setUser(user);
 
-        // Criar uma postagem
-        when(postagemService.criarPostagem(anyLong(), any(PostagemEntity.class), anyLong())).thenReturn(post);
+        // Simular o comportamento do PostagemService
+        when(postagemService.salvarPostagem(any(PostagemEntity.class), any(UserEntity.class))).thenReturn(post);
 
-        // Nova postagem
+        // Nova postagem para ser criada
         PostagemEntity novaPostagem = new PostagemEntity();
         novaPostagem.setImagem("Nova Festa");
 
-        PostagemEntity resultado = postagemController.criarPostagem(novaPostagem, "Atletica Ursao");
+        // Chamar o controller para criar a postagem
+        PostagemEntity resultado = postagemController.criarPostagem(novaPostagem, "atletica@gmail.com");
 
-        // Retorna
+        // Verificar o resultado
         assertEquals("Nova Festa", resultado.getImagem());
+        assertEquals("Atletica Ursao", resultado.getUser().getNome());
     }
 
     @Test
