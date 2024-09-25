@@ -58,8 +58,9 @@ public class AtleticaServiceTest {
         Optional<AtleticaEntity> resultado = atleticaService.buscarAtleticaPorId(1L);
 
         assertTrue(resultado.isPresent());
-        assertEquals("Atlética ABC", resultado.get().getNome());
+        assertEquals("Atlética Panda", resultado.get().getNome());
     }
+
 
     @Test
     void testDeletarAtletica() {
