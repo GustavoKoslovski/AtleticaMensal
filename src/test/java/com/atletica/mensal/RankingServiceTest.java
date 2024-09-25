@@ -79,18 +79,21 @@ public class RankingServiceTest {
 
 
 	@Test
-	@DisplayName("testa atualicarPontuacao quando a atletica existe")
+	@DisplayName("testa atualizarPontuacao quando a atletica existe")
 	void atualizarPontuacaoAtleticaExiste() {
 
+		// Criar uma entidade de ranking com pontuação inicial de 50
 		RankingEntity rankingEntity = new RankingEntity();
 		rankingEntity.setPontuacaoTotal(50);
 
-		when(rankingRepository.findById(1)).thenReturn(Optional.of(rankingEntity));
+		// Simular o repositório retornando a entidade de ranking existente
+		when(rankingRepository.findById(1L)).thenReturn(Optional.of(rankingEntity));
 
+		// Chamar o método de atualizar a pontuação, somando 10
 		rankingService.atualizarPontuacao(1L, 10);
 
+		// Verificar se a pontuação total foi atualizada corretamente para 60 (50 + 10)
 		Assertions.assertEquals(60, rankingEntity.getPontuacaoTotal());
-
 	}
 
 
